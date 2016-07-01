@@ -8,17 +8,23 @@
 INT ("+"|"-")?(("0"|[1-9][0-9]*))
 FLOAT ({INT})"."([0-9]+)
 FUNCTIONID [A-Z]+
-CHAR \'.\'
 BOOL true|false
 STRING \".*\"
+TYPENAME Int|Float|Bool|Char|String
 ID [a-zA-Z][a-zA-Z0-9]*
-TYPENAME Int|Float|Bool|Char|String|List
+CHAR \'.\'
+OPEN ("{"[ \t]*"\n")|("\n"[ \t]*"{"[ \t]*"\n")
+CLOSE ("}"[ \t]*"\n")|("\n"[ \t]*"}"[ \t]*"\n")
+
 
 /* Опция, необходимая для языков с препроцессорами и #include,
    в нашем случае не нужна */
 %option noyywrap
 
 %%
+"Return" return RETURN;
+"List" return LIST;
+"Of" return OF;
 "Main" return MAIN;
 "Function" return FUNCTION;
 "Read" return READ;
@@ -36,6 +42,7 @@ TYPENAME Int|Float|Bool|Char|String|List
 {FLOAT}	return FLOAT;
 {INT}	return INT;
 {CHAR}	return CHAR;
+{BOOL}	return BOOL;
 {STRING} return STRING;
 {FUNCTIONID} return FUNCTIONID;
 {ID} return ID;
@@ -59,12 +66,14 @@ TYPENAME Int|Float|Bool|Char|String|List
 "%=" return MODULOANDASSIGN;
 "++" return INCREMENT;
 "--" return DECREMENT;
-"{" return '{';
-"}" return '}';
+{OPEN} return OPEN;
+{CLOSE} return CLOSE;
 "(" return '(';
 ")" return ')';
 "[" return '[';
 "]" return ']';
 "," return ',';
+"\'" return '\'';
+"\"" return '\"';
 "\n" return NEWLINE;
 [ \t]+; /*skip*/

@@ -32,6 +32,9 @@ void checker_error (char const *s) {
 /* Подробные сообщения об ошибках разбора по грамматике. */
 %error-verbose
 
+%token RETURN			 "Return"
+%token LIST				 "List"
+%token OF				 "Of"
 %token MAIN				 "Main"
 %token FUNCTION 		 "Function"
 %token READ				 "Read"
@@ -49,6 +52,7 @@ void checker_error (char const *s) {
 %token FLOAT 			 "Float"
 %token INT				 "Int"
 %token CHAR 			 "Char"
+%token BOOL 			 "bool"
 %token STRING 			 "String"
 %token FUNCTIONID		 "function id"
 %token ID 				 "id"
@@ -63,6 +67,8 @@ void checker_error (char const *s) {
 %token MODULOANDASSIGN 	 "%="
 %token INCREMENT 		 "++"
 %token DECREMENT 		 "--"
+%token OPEN				 "{"
+%token CLOSE			 "}"
 %token NEWLINE 			 "new line"
 
 /* %left, %right, %nonassoc и %precedence управляют разрешением
@@ -81,14 +87,131 @@ void checker_error (char const *s) {
 
 %% /* Грамматические правила */
 
-s : function_list MAIN '{' statements '}'
+s : function_list MAIN OPEN statement_list CLOSE
 
 function_list : function_list function | epsilon
 
-function : FUNCTION FUNCTIONID '(' argument_list ')'
+function : FUNCTION FUNCTIONID '(' argument_list ')' OPEN statement_list CLOSE
+		 | FUNCTION FUNCTIONID '(' ')' OPEN statement_list CLOSE
 
-argument_list :
 
-epsilon :
+		 
+argument_list : argument_list ',' argument | argument
 
-statements :
+argument : type_name ID
+
+epsilon : 
+
+statement_list : statement_list statement | epsilon
+
+statement : if_statement
+		  | while_statement
+		  | for_statement
+		  | READ '(' data ')' NEWLINE
+		  | PRINT '(' data ')' NEWLINE
+		  | expression NEWLINE
+		  | RETURN '(' data ')' NEWLINE
+		  | assignment_expression NEWLINE
+		  | init_expression NEWLINE
+
+		  
+/*---------условные выражения-----------*/
+if_statement : one_if_statement
+			 | one_if_statement elif_statement
+			 | one_if_statement one_else_statement
+			 | one_if_statement elif_statement one_else_statement
+
+one_if_statement : IF '(' bool_expression ')' OPEN statement_list CLOSE	 
+
+elif_statement : elif_statement one_elif_statement | one_elif_statement
+
+one_elif_statement : ELIF '(' bool_expression ')' OPEN statement_list CLOSE
+
+one_else_statement : ELSE OPEN statement_list CLOSE
+/*--------------------------------------*/
+
+
+/*---------------циклы------------------*/
+while_statement : WHILE '(' bool_expression ')' OPEN statement_list CLOSE
+				| DO OPEN statement_list CLOSE WHILE '(' bool_expression ')' NEWLINE
+
+for_statement : FOR '(' ID '=' numeric_type ',' bool_expression ',' arithmetic_expression ')' OPEN statement_list CLOSE
+			  | FOR '(' ID ',' bool_expression ',' arithmetic_expression ')' OPEN statement_list CLOSE
+
+/*---------------------------------------*/
+
+expression : '(' expression ')'
+		   | arithmetic_expression
+		   | bool_expression
+
+init_expression : atomic_init_expression
+				| list_init_expression
+				| string_init_expression
+		 		 
+atomic_init_expression : ID '=' atomic_type 
+
+list_init_expression : ID '(' arithmetic_expression ')' of_type
+					 | ID '=' '<' list_type '>'
+
+of_type : of_type OF TYPENAME | OF TYPENAME
+					 
+string_init_expression : ID '(' arithmetic_expression ')'
+					   | ID '=' '"''"'
+					   | ID '=' '"' str '"'					   
+
+assignment_expression : ID '=' data
+					  | ID '=' '<' list_type '>'
+					  | ID '=' '"''"'
+					  | ID '=' '"' str '"'
+					  | ID PLUSANDASSIGN data
+					  | ID MINUSANDASSIGN data
+					  | ID DIVIDEANDASSIGN data
+					  | ID MULTIPLYANDASSIGN data
+					  | ID MODULOANDASSIGN data
+					  | ID INCREMENT data
+					  | ID DECREMENT data
+	   
+arithmetic_expression : data
+					  | arithmetic_expression '+' data
+					  | arithmetic_expression '-' data
+					  | arithmetic_expression '*' data
+					  | arithmetic_expression '/' data
+					  | arithmetic_expression '%' data
+
+bool_expression : data
+				| bool_expression '>' data 
+				| bool_expression '<' data
+				| bool_expression '!' data 
+				| bool_expression GREATEROREQUAL data 
+				| bool_expression LESSOREQUAL data 
+				| bool_expression EQUAL data 
+				| bool_expression NOTEQUAL data 
+				| bool_expression AND data
+				| bool_expression OR data				
+
+/*-----------------массивы------------*/
+multidimensional_list : multidimensional_list one_dimensional_list | one_dimensional_list
+
+one_dimensional_list : one_dimensional_list list_type | list_type
+
+list_type : str | atomic_type
+/*-------------------------------------*/
+
+/*-----------------индексы-------------*/
+index : ID multidimensional_index
+
+multidimensional_index : multidimensional_index one_dimensional_index | one_dimensional_index
+
+one_dimensional_index : '[' arithmetic_expression ']'
+/*-------------------------------------*/
+
+str : str CHAR | CHAR
+
+atomic_type : numeric_type | CHAR | BOOL
+
+numeric_type : INT | FLOAT
+
+data : ID | list_type | index | multidimensional_list | expression
+
+type_name : TYPENAME | LIST
+
