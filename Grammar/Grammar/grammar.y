@@ -89,7 +89,9 @@ void checker_error (char const *s) {
 
 s : function_list MAIN OPEN statement_list CLOSE
   | MAIN OPEN statement_list CLOSE
-
+  | function_list MAIN OPEN statement_list '}'
+  | MAIN OPEN statement_list '}'
+ 
 function_list : function_list function | function
 
 function : FUNCTION FUNCTIONID '(' argument_list ')' OPEN statement_list CLOSE
@@ -133,8 +135,8 @@ one_else_statement : ELSE OPEN statement_list CLOSE
 while_statement : WHILE '(' bool_expression ')' OPEN statement_list CLOSE
 				| DO OPEN statement_list CLOSE WHILE '(' bool_expression ')' NEWLINE
 
-for_statement : FOR '(' ID '=' numeric_type ',' bool_expression ',' arithmetic_expression ')' OPEN statement_list CLOSE
-			  | FOR '(' ID ',' bool_expression ',' arithmetic_expression ')' OPEN statement_list CLOSE
+for_statement : FOR '(' ID '=' numeric_type ',' bool_expression ',' assignment_expression ')' OPEN statement_list CLOSE
+			  | FOR '(' ID ',' bool_expression ',' assignment_expression ')' OPEN statement_list CLOSE
 
 /*---------------------------------------*/
 
@@ -161,14 +163,24 @@ bool_expression : data
 				| bool_expression AND data
 				| bool_expression OR data				
 
-assignment_expression : ID '=' data
+/*assignment_expression : ID '=' data
 					  | ID PLUSANDASSIGN data
 					  | ID MINUSANDASSIGN data
 					  | ID DIVIDEANDASSIGN data
 					  | ID MULTIPLYANDASSIGN data
 					  | ID MODULOANDASSIGN data
-					  | ID INCREMENT data
-					  | ID DECREMENT data
+					  | ID INCREMENT
+					  | ID DECREMENT*/
+
+assignment_expression : data '=' data
+					  | data PLUSANDASSIGN data
+					  | data MINUSANDASSIGN data
+					  | data DIVIDEANDASSIGN data
+					  | data MULTIPLYANDASSIGN data
+					  | data MODULOANDASSIGN data
+					  | data INCREMENT
+					  | data DECREMENT
+					  
 
 init_expression : list_init_expression
 				| string_init_expression
@@ -183,7 +195,7 @@ of_list : OF LIST '(' arithmetic_expression ')'
 string_init_expression : ID '(' arithmetic_expression ')'
 					   
 /*-----------------массивы------------*/
-init_list_row : '{' list_row '}'
+init_list_row : '<' list_row '>'
 
 list_row : list_row ',' data | data
 

@@ -8,14 +8,14 @@
 INT ("+"|"-")?(("0"|[1-9][0-9]*))
 FLOAT ({INT})"."([0-9]+)
 FUNCTIONID [A-Z]+
-BOOL true|false
+BOOL True|False
 STRING \".*\"
 TYPENAME Int|Float|Bool|Char|String
 ID [a-zA-Z][a-zA-Z0-9]*
 CHAR \'.\'
-OPEN ("{"[ \t]*"\n")|("\n"[ \t]*"{"[ \t]*"\n")
-CLOSE ("}"[ \t]*"\n")|("\n"[ \t]*"}"[ \t]*"\n")
-
+OPEN ("\n"[ \t]*)?"{"[ \t]*"\n"
+/*CLOSE ("\n"[ \t]*)?"}"[ \t]*"\n")*/
+CLOSE "}"[ \t]*"\n"
 
 /* Опция, необходимая для языков с препроцессорами и #include,
    в нашем случае не нужна */
