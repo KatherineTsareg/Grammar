@@ -96,6 +96,7 @@ function_list : function_list function | function
 
 function : FUNCTION FUNCTIONID '(' argument_list ')' OPEN statement_list CLOSE
 		 | FUNCTION FUNCTIONID '(' ')' OPEN statement_list CLOSE
+		 | NEWLINE
 
 fuction_call : FUNCTIONID '(' list_row ')'
  
