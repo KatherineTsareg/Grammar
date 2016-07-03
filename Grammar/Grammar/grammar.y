@@ -164,14 +164,6 @@ bool_expression : data
 				| bool_expression AND data
 				| bool_expression OR data				
 
-/*assignment_expression : ID '=' data
-					  | ID PLUSANDASSIGN data
-					  | ID MINUSANDASSIGN data
-					  | ID DIVIDEANDASSIGN data
-					  | ID MULTIPLYANDASSIGN data
-					  | ID MODULOANDASSIGN data
-					  | ID INCREMENT
-					  | ID DECREMENT*/
 
 assignment_expression : data '=' data
 					  | data PLUSANDASSIGN data
@@ -181,6 +173,7 @@ assignment_expression : data '=' data
 					  | data MODULOANDASSIGN data
 					  | data INCREMENT
 					  | data DECREMENT
+					  | CONST ID '=' data
 					  
 
 init_expression : list_init_expression
