@@ -146,6 +146,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="globals.h" />
+    <ClInclude Include="grammar.gen.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="grammar.gen.c" />
+    <ClCompile Include="lexer.gen.c" />
+    <ClCompile Include="main.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

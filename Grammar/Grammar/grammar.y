@@ -88,21 +88,18 @@ void checker_error (char const *s) {
 %% /* Грамматические правила */
 
 s : function_list MAIN OPEN statement_list CLOSE
+  | MAIN OPEN statement_list CLOSE
 
-function_list : function_list function | epsilon
+function_list : function_list function | function
 
 function : FUNCTION FUNCTIONID '(' argument_list ')' OPEN statement_list CLOSE
 		 | FUNCTION FUNCTIONID '(' ')' OPEN statement_list CLOSE
 
 
 		 
-argument_list : argument_list ',' argument | argument
+argument_list : argument_list ',' ID | ID
 
-argument : type_name ID
-
-epsilon : 
-
-statement_list : statement_list statement | epsilon
+statement_list : statement_list statement | statement
 
 statement : if_statement
 		  | while_statement
@@ -113,6 +110,7 @@ statement : if_statement
 		  | RETURN '(' data ')' NEWLINE
 		  | assignment_expression NEWLINE
 		  | init_expression NEWLINE
+		  | NEWLINE
 
 		  
 /*---------условные выражения-----------*/
@@ -140,36 +138,10 @@ for_statement : FOR '(' ID '=' numeric_type ',' bool_expression ',' arithmetic_e
 
 /*---------------------------------------*/
 
-expression : '(' expression ')'
-		   | arithmetic_expression
-		   | bool_expression
+paren_expr : '(' expression ')'
 
-init_expression : atomic_init_expression
-				| list_init_expression
-				| string_init_expression
-		 		 
-atomic_init_expression : ID '=' atomic_type 
-
-list_init_expression : ID '(' arithmetic_expression ')' of_type
-					 | ID '=' '<' list_type '>'
-
-of_type : of_type OF TYPENAME | OF TYPENAME
-					 
-string_init_expression : ID '(' arithmetic_expression ')'
-					   | ID '=' '"''"'
-					   | ID '=' '"' str '"'					   
-
-assignment_expression : ID '=' data
-					  | ID '=' '<' list_type '>'
-					  | ID '=' '"''"'
-					  | ID '=' '"' str '"'
-					  | ID PLUSANDASSIGN data
-					  | ID MINUSANDASSIGN data
-					  | ID DIVIDEANDASSIGN data
-					  | ID MULTIPLYANDASSIGN data
-					  | ID MODULOANDASSIGN data
-					  | ID INCREMENT data
-					  | ID DECREMENT data
+expression : arithmetic_expression
+		   | bool_expression					   
 	   
 arithmetic_expression : data
 					  | arithmetic_expression '+' data
@@ -181,7 +153,7 @@ arithmetic_expression : data
 bool_expression : data
 				| bool_expression '>' data 
 				| bool_expression '<' data
-				| bool_expression '!' data 
+				| '!' bool_expression 
 				| bool_expression GREATEROREQUAL data 
 				| bool_expression LESSOREQUAL data 
 				| bool_expression EQUAL data 
@@ -189,15 +161,32 @@ bool_expression : data
 				| bool_expression AND data
 				| bool_expression OR data				
 
+assignment_expression : ID '=' data
+					  | ID PLUSANDASSIGN data
+					  | ID MINUSANDASSIGN data
+					  | ID DIVIDEANDASSIGN data
+					  | ID MULTIPLYANDASSIGN data
+					  | ID MODULOANDASSIGN data
+					  | ID INCREMENT data
+					  | ID DECREMENT data
+
+init_expression : list_init_expression
+				| string_init_expression
+
+list_init_expression : ID '(' arithmetic_expression ')' of_type
+
+of_type : of_list OF TYPENAME | OF TYPENAME
+
+of_list : OF LIST '(' arithmetic_expression ')'
+		| of_list OF LIST '(' arithmetic_expression ')'
+					 
+string_init_expression : ID '(' arithmetic_expression ')'
+					   
 /*-----------------массивы------------*/
-multidimensional_list : multidimensional_list one_dimensional_list | one_dimensional_list
+init_list_row : '{' list_row '}'
 
-one_dimensional_list : one_dimensional_list list_type | list_type
+list_row : list_row ',' data | data
 
-list_type : str | atomic_type
-/*-------------------------------------*/
-
-/*-----------------индексы-------------*/
 index : ID multidimensional_index
 
 multidimensional_index : multidimensional_index one_dimensional_index | one_dimensional_index
@@ -205,13 +194,12 @@ multidimensional_index : multidimensional_index one_dimensional_index | one_dime
 one_dimensional_index : '[' arithmetic_expression ']'
 /*-------------------------------------*/
 
-str : str CHAR | CHAR
+data : ID | list_type | index | paren_expr | init_list_row
+
+list_type : STRING | atomic_type
 
 atomic_type : numeric_type | CHAR | BOOL
 
 numeric_type : INT | FLOAT
 
-data : ID | list_type | index | multidimensional_list | expression
-
-type_name : TYPENAME | LIST
 

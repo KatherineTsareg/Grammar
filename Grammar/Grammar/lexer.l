@@ -68,6 +68,8 @@ CLOSE ("}"[ \t]*"\n")|("\n"[ \t]*"}"[ \t]*"\n")
 "--" return DECREMENT;
 {OPEN} return OPEN;
 {CLOSE} return CLOSE;
+"{" return '{';
+"}" return '}';
 "(" return '(';
 ")" return ')';
 "[" return '[';
@@ -76,4 +78,4 @@ CLOSE ("}"[ \t]*"\n")|("\n"[ \t]*"}"[ \t]*"\n")
 "\'" return '\'';
 "\"" return '\"';
 "\n" return NEWLINE;
-[ \t]+; /*skip*/
+[ \t]+ ;
