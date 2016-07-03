@@ -97,8 +97,9 @@ function_list : function_list function | function
 function : FUNCTION FUNCTIONID '(' argument_list ')' OPEN statement_list CLOSE
 		 | FUNCTION FUNCTIONID '(' ')' OPEN statement_list CLOSE
 
-
-		 
+fuction_call : FUNCTIONID '(' list_row ')'
+ 
+ 
 argument_list : argument_list ',' ID | ID
 
 statement_list : statement_list statement | statement
@@ -206,7 +207,7 @@ multidimensional_index : multidimensional_index one_dimensional_index | one_dime
 one_dimensional_index : '[' arithmetic_expression ']'
 /*-------------------------------------*/
 
-data : ID | list_type | index | paren_expr | init_list_row
+data : ID | list_type | index | paren_expr | init_list_row | fuction_call
 
 list_type : STRING | atomic_type
 
