@@ -69,7 +69,10 @@ void checker_error (char const *s) {
 %token DECREMENT 		 "--"
 %token OPEN				 "{"
 %token CLOSE			 "}"
+%token COMMENT			 "comment"
+%token MULTILINECOMMENT	 "multiline comment"
 %token NEWLINE 			 "new line"
+
 
 /* %left, %right, %nonassoc и %precedence управляют разрешением
    приоритета операторов и правил ассоциативности
@@ -87,15 +90,16 @@ void checker_error (char const *s) {
 
 %% /* Грамматические правила */
 
-s : function_list MAIN OPEN statement_list CLOSE
-  | MAIN OPEN statement_list CLOSE
-  | function_list MAIN OPEN statement_list '}'
-  | MAIN OPEN statement_list '}'
- 
+s : function_list MAIN construction
+  | MAIN construction
+
+construction : OPEN statement_list CLOSE
+			 | OPEN CLOSE
+
 function_list : function_list function | function
 
-function : FUNCTION FUNCTIONID '(' argument_list ')' OPEN statement_list CLOSE
-		 | FUNCTION FUNCTIONID '(' ')' OPEN statement_list CLOSE
+function : FUNCTION FUNCTIONID '(' argument_list ')' construction
+		 | FUNCTION FUNCTIONID '(' ')' construction
 		 | NEWLINE
 
 fuction_call : FUNCTIONID '(' list_row ')'
@@ -123,22 +127,22 @@ if_statement : one_if_statement
 			 | one_if_statement one_else_statement
 			 | one_if_statement elif_statement one_else_statement
 
-one_if_statement : IF '(' bool_expression ')' OPEN statement_list CLOSE	 
+one_if_statement : IF '(' bool_expression ')' construction	 
 
 elif_statement : elif_statement one_elif_statement | one_elif_statement
 
-one_elif_statement : ELIF '(' bool_expression ')' OPEN statement_list CLOSE
+one_elif_statement : ELIF '(' bool_expression ')' construction
 
-one_else_statement : ELSE OPEN statement_list CLOSE
+one_else_statement : ELSE construction
 /*--------------------------------------*/
 
 
 /*---------------циклы------------------*/
-while_statement : WHILE '(' bool_expression ')' OPEN statement_list CLOSE
-				| DO OPEN statement_list CLOSE WHILE '(' bool_expression ')' NEWLINE
+while_statement : WHILE '(' bool_expression ')' construction
+				| DO construction WHILE '(' bool_expression ')' NEWLINE
 
-for_statement : FOR '(' ID '=' numeric_type ',' bool_expression ',' assignment_expression ')' OPEN statement_list CLOSE
-			  | FOR '(' ID ',' bool_expression ',' assignment_expression ')' OPEN statement_list CLOSE
+for_statement : FOR '(' ID '=' numeric_type ',' bool_expression ',' assignment_expression ')' construction
+			  | FOR '(' ID ',' bool_expression ',' assignment_expression ')' construction
 
 /*---------------------------------------*/
 

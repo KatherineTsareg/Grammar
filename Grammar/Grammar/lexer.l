@@ -5,8 +5,11 @@
 
 %}
 
+
+COMMENT "#".*"\n"
+MULTILINECOMMENT "+-"(.|\n)*"-+"
 INT ("+"|"-")?(("0"|[1-9][0-9]*))
-FLOAT ({INT})"."([0-9]+)
+FLOAT ({INT})"."([0-9]+)((e|E)("+"|"-")?("0"|([1-9][0-9]*)))?
 FUNCTIONID [A-Z]+
 BOOL True|False
 STRING \".*\"
@@ -16,7 +19,7 @@ CHAR \'.\'
 OPEN ("\n"[ \t]*)?"{"[ \t]*"\n"
 /*CLOSE ("\n"[ \t]*)?"}"[ \t]*"\n")*/
 CLOSE "}"[ \t]*"\n"
-COMMENT "#-".*"-#"
+
 
 /* Опция, необходимая для языков с препроцессорами и #include,
    в нашем случае не нужна */
@@ -67,6 +70,8 @@ COMMENT "#-".*"-#"
 "%=" return MODULOANDASSIGN;
 "++" return INCREMENT;
 "--" return DECREMENT;
+{COMMENT} ;
+{MULTILINECOMMENT} ;
 {OPEN} return OPEN;
 {CLOSE} return CLOSE;
 "{" return '{';
@@ -78,6 +83,6 @@ COMMENT "#-".*"-#"
 "," return ',';
 "\'" return '\'';
 "\"" return '\"';
+
 "\n" return NEWLINE;
-{COMMENT} ;
 [ \t]+ ;

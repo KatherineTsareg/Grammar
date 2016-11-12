@@ -76,9 +76,11 @@
      DECREMENT = 292,
      OPEN = 293,
      CLOSE = 294,
-     NEWLINE = 295,
-     NOTEQUALS = 296,
-     EQUALS = 297
+     COMMENT = 295,
+     MULTILINECOMMENT = 296,
+     NEWLINE = 297,
+     NOTEQUALS = 298,
+     EQUALS = 299
    };
 #endif
 
